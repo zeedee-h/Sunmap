@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>OSM Buildings</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+     <link rel="apple-touch-icon"
+      href="/images/ICON-03.png" /> <!-- this is meant to add the icon to homescreen, doesnt seem to work yet-->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map {
+      width: 100%;
+      height: 88%;
+    }
+      
+      .draggable { width: 90px; height: 90px; padding: 0.5em; float: left; margin: 0 10px 10px 0; }
+  #draggable, #draggable2 { margin-bottom:20px; }
+  #draggable { cursor: n-resize; }
+  #draggable2 { cursor: e-resize; }
+  #containment-wrapper { width: 95%; height:150px; border:2px solid #ccc; padding: 10px; }
+  h3 { clear: left; }
+      
+.slider .ui-state-default {
+    background: none;
+}
+ .slider.ui-slider .ui-slider-handle {
+    width: 14px;
+    height: 18px;
+    margin-left: -5px;
+    top:-4px;
+    border:none;
+}
+      
+      #storename1 {text-indent: 5%}
+      #storerating1 {text-indent: 5%}
+      #storesun1 {text-indent: 5%}
+      #storedistance1 {text-indent: 5%}
+ 
+      #storeinfoleft {
+          background-color: #e6a48e;
+    border: none;
+    color: white;
+    padding: 0px 0px;
+    text-align: left;
+    text-decoration: none;
+    display: inline;
+    font-size: 12px;
+    margin: 0px 0px;
+    cursor: pointer;
+    width: 50%;
+    float: left;
+    font-family: sans-serif
+      }      
+       #storeinforight {
+          background-color: #faa58c;
+    border: none;
+    color: white;
+    padding: 0px 0px;
+    text-align: left;
+    text-decoration: none;
+    display: inline;
+    font-size: 12px;
+    margin: 0px 0px;
+    cursor: pointer;
+    width: 50%;
+    float: left;
+    font-family: sans-serif
+      }   
+      
+#storename {
+    background-color: #e6a48e;
+    border: none;
+    color: white;
+    padding: 10px 5%;
+    text-align: left;
+    text-decoration: none;
+    display: inline;
+    font-size: 12px;
+    margin: 0px 0px;
+    cursor: pointer;
+    width: 40%;
+    float: left;
+    font-family: sans-serif
+}
+      #storesun {
+    background-color: #ffc787;
+    border: none;
+    color: white;
+    padding: 10px 5%;
+    text-align: left;
+    text-decoration: none;
+    display: inline;
+    font-size: 12px;
+    margin: 0px 0px;
+    cursor: pointer;
+    width: 40%;
+    float: left;
+    font-family: sans-serif
+}
+      #storerating {
+    background-color: #e6a48e;
+    border: none;
+    color: white;
+    padding: 10px 5%;
+    text-align: left;
+    text-decoration: none;
+    display: inline;
+    font-size: 12px;
+    margin: 0px 0px;
+    cursor: pointer;
+    width: 40%;
+    float: left;
+    font-family: sans-serif
+}
+      #storedistance {
+    background-color: #ffc787;
+    border: none;
+    color: white;
+    padding: 10px 5%;
+    text-align: left;
+    text-decoration: none;
+    display: inline;
+    font-size: 12px;
+    margin: 0px 0px;
+    cursor: pointer;
+    width: 40%;
+    float: left;
+    font-family: sans-serif
+}
+      
+.slider {
+    height: 10px;
+}
+      
+      
+      .sliderhandleimg {
+          height: 20px;
+          overflow-x: auto;
+          width: 1250px;
+          
+          
+          
+      }
+      
+      
+      .button {
+    background-color: #e6a48e;
+    border: none;
+    color: white;
+    padding: 20px 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline;
+    font-size: 12px;
+    margin: 0px 0px;
+    cursor: pointer;
+    width: 20%;
+    float: left;
+}
+      
+      .button1 {background-color: #ffc787;} 
+.button2 {background-color: #faa58c;}
+.button3 {background-color: #fa8a8c;} 
+.button4 {background-color: #db98a3;} 
+.button5 {background-color: #b2889c;} 
+.button6 {background-color: #837995;} 
+
+    .control {
+      position: absolute;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .control.tilt {
+      top: 0;
+    }
+
+    .control.rotation {
+      top: 45px;
+    }
+
+    .control.zoom {
+      top: 90px;
+    }
+
+    .control.zoom button{
+      font-weight: normal;
+    }
+
+    .control button {
+      width: 30px;
+      height: 30px;
+      margin: 15px 0 0 15px;
+      border: 1px solid #999999;
+      background: #ffffff;
+      opacity: 0.6;
+      border-radius: 5px;
+      box-shadow: 0 0 5px #666666;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .control button:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+      
+      
+      
+      
+      #xlabel {
+  width:40px;
+  height:30px;
+  position:absolute;
+  z-Index:10;
+  background: #fa8a8c;
+  color: white;
+          font-weight: bold;
+          text-align: center;
+          opacity: 0.8;
+          font-family: sans-serif;
+          font-size: 10px;
+          padding: 5px 5px;
+}
+           
+
+      
+      
+      
+      
+      .dropbtn {
+    background-color: #b2889c;
+    color: white;
+    padding: 20px 0px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+          width: 20%;
+          
+          
+          
+}
+
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #b2889c;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    float: left;
+       
+   
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #e6a48e;
+    min-width: 100%;
+    overflow: auto;
+    
+    bottom: 100%; /* added this attribute */
+    text-align: left;
+    font-size: 12px;
+    font-family: sans-serif;
+    /* padding-left: 100px;  remove this as it doesnt really work*/
+    
+
+    
+    z-index: 1;
+}
+
+.dropdown-content a {
+   
+    padding: 5px 5px;
+    text-decoration: none;
+    display: block;
+    color: white;
+    
+}
+
+.dropdown a:hover {background-color: #faa58c;}
+
+.show {display:block;}
+      
+      
+      
+      
+      
+      
+  </style>
+  <link rel="stylesheet" href="OSMBuildings/OSMBuildings.css">
+  <script src="OSMBuildings/OSMBuildings.js"></script>
+    
+  <script src="suncalc-master/suncalc.js"></script>
+    
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    
+    <!--  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css"> -->
+     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $( "#draggable" ).draggable({ axis: "y" });
+    $( "#draggable2" ).draggable({ axis: "x" });
+ 
+    $( "#draggable3" ).draggable({ containment: "#containment-wrapper", scroll: false });
+    $( "#draggable4" ).draggable({ containment: "parent" });
+        
+        
+   
+    </script>
+    <!--
+    <link rel="stylesheet" href="jquery-ui-1.12.1.custom/jquery-ui.min.css">
+<script src="jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+<script src="jquery-ui-1.12.1.custom/jquery-ui.min.js"></script> -->
+    
+   
+     <!--<script src="http://cdn.osmbuildings.org/OSMBuildings-Leaflet.js"></script>
+   
+    
+   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    
+    
+    -->
+    
+    <script type="text/javascript">
+        
+        var LaundromatNorrebro = {
+                cafeName: "Laundromat N",
+                cafeLatLong: ["55.689996", "12.558559"],
+                cafeRating: 4.5
+                };
+        var Props = {
+                cafeName: "Props Coffee Shop",
+                cafeLatLong: ["55.687734", "12.559941"],
+                cafeRating: 5.0
+                };
+        var LaBanchina = {
+                cafeName: "La Banchina",
+                cafeLatLong: ["55.689347", "12.610936"],
+                cafeRating: 4.5
+                };
+         var NextDoor = {
+                cafeName: "Next Door",
+                cafeLatLong: ["55.678843", "12.568868"],
+                cafeRating: 4.5
+                };
+        var CCN = {
+                cafeName: "CC Norrebro",
+                cafeLatLong: ["55.692146", "12.544984"],
+                cafeRating: 4.0
+                };
+        var Kalaset = {
+                cafeName: "Kalaset",
+                cafeLatLong: ["55.684630", "12.566879"],
+                cafeRating: 4.0
+                };
+        var Bevars = {
+                cafeName: "Bevars",
+                cafeLatLong: ["55.688420", "12.561970"],
+                cafeRating: 4.0
+                };
+        var Dyrehaven = {
+                cafeName: "Dyrehaven",
+                cafeLatLong: ["55.665668", "12.549604"],
+                cafeRating: 4.0
+                };
+        var BangJensen = {
+                cafeName: "Bang Jensen",
+                cafeLatLong: ["55.668177", "12.549458"],
+                cafeRating: 4.5
+                };
+        var LOS = {
+                cafeName: "Los",
+                cafeLatLong: ["55.691806", "12.558011"],
+                cafeRating: 4.0
+                };
+         var Souls = {
+                cafeName: "Souls",
+                cafeLatLong: ["55.703523", "12.585204"],
+                cafeRating: 4.0
+                };
+        var Papiroen = {
+                cafeName: "Papiroen",
+                cafeLatLong: ["55.679365", "12.598277"],
+                cafeRating: 4.0
+                };
+        var Torvehallerne = {
+                cafeName: "Torvehallerne",
+                cafeLatLong: ["55.684049", "12.569464"],
+                cafeRating: 4.0
+                };
+        var Home = {
+                cafeName: "Home",
+                cafeLatLong: ["55.683904", "12.556397"],
+                cafeRating: 5.0
+                };
+
+    
+    var xCafes = [LaundromatNorrebro, Props, LaBanchina, NextDoor, CCN, Kalaset, Bevars, Dyrehaven, BangJensen, LOS, Souls, Papiroen, Torvehallerne, Home];
+    
+    var xi1 = 0;
+    
+        // start locatecafe function
+        
+    var locateCafe = function(xi1) {      
+         
+    $("#xlabel").text(xCafes[xi1].cafeName);
+        
+    $("#storename1").text(xCafes[xi1].cafeName);
+        
+    $("#storerating1").text(xCafes[xi1].cafeRating);
+        
+        var times = SunCalc.getTimes(new Date(), xCafes[xi1].cafeLatLong[0], xCafes[xi1].cafeLatLong[1]);
+        var sunsetStr = times.sunset.getHours() + ':' + times.sunrise.getMinutes();
+        
+    $("#storesun1").text("Sunset " + sunsetStr);
+    
+    osmb.setPosition({latitude:xCafes[xi1].cafeLatLong[0], longitude:xCafes[xi1].cafeLatLong[1]});
+    
+    var xlabel = document.getElementById('xlabel');
+    
+    var pos = osmb.project(xCafes[xi1].cafeLatLong[0], xCafes[xi1].cafeLatLong[1], 1);
+    xlabel.style.left = Math.round(pos.x) + 'px';
+    xlabel.style.top = Math.round(pos.y) + 'px';
+    
+    osmb.on('change', function() { //this keeps the marker in place
+  var pos = osmb.project(xCafes[xi1].cafeLatLong[0], xCafes[xi1].cafeLatLong[1], 1);
+  xlabel.style.left = Math.round(pos.x) + 'px';
+  xlabel.style.top = Math.round(pos.y) + 'px';
+        
+                                    
+        
+        });
+        
+    } //end of locateCafe function
+    
+    //----------------------------------
+    
+    var getDistance = function(xi1) {
+        
+   if ("geolocation" in navigator) {
+  navigator.geolocation.getCurrentPosition(function(position) {
+  
+      var xUserLat = position.coords.latitude;
+      var xUserLong = position.coords.longitude;
+     
+var lat1 = xUserLat;
+var lon1 = xUserLong;
+
+var lat2 = xCafes[xi1].cafeLatLong[0];
+var lon2 = xCafes[xi1].cafeLatLong[1];
+
+function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  return d;
+  
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
+
+xDistance = getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2);
+xDistanceRounded = Math.round(xDistance * 100)/100;
+      
+       $("#storedistance1").text(xDistanceRounded + " km");
+      
+      
+});
+        
+        
+} else {
+  alert("not available");
+    return;
+}
+        
+        }
+    
+    
+   /* window.onload = function() {
+        var xa = document.getElementById("myCafeLink0");
+        xa.onclick = function() {
+            locateCafe(0);
+            return false;
+        }
+    }
+    window.onload = function() {
+        var xb = document.getElementById("myCafeLink1");
+        xb.onclick = function() {
+            locateCafe(1);
+            return false;
+        }
+    }
+    window.onload = function() {
+        var xc = document.getElementById("myCafeLink2");
+        xc.onclick = function() {
+            locateCafe(2);
+            return false;
+        }
+    } */
+    
+   /* $('.draggable').draggable({
+    axis: "x"
+}); */
+
+
+    
+    </script>
+    
+    
+    
+</head>
+
+<body>
+<div id="map"></div>
+    
+
+<!--<div class="control tilt">
+  <button class="dec">&#8601;</button>
+  <button class="inc">&#8599;</button>
+</div>
+
+<div class="control rotation">
+  <button class="inc">&#8630;</button>
+  <button class="dec">&#8631;</button>
+</div>
+
+<div class="control zoom">
+  <button class="dec">-</button>
+  <button class="inc">+</button>
+</div>-->
+  <!--  
+   <div class="control tilt">
+  <button class="dec">&#8601;</button>
+</div> -->
+    
+    <div>
+ <span class="dropdown">
+
+<button class="button button1" id="xBtnNow">Now</button>
+<button class="button button2" id="xBtnMin">-</button>
+<button class="button button3" id="xBtnPls">+</button>
+<button class="button button4" id="xBtnPos">P</button>
+      
+<button onclick="x1myFunction()" class="dropbtn">M</button>
+  <span id="myDropdown" class="dropdown-content">
+    <a id="myCafeLink0" onclick="locateCafe(0), getDistance(0)" href="#home">LaundromatN</a>
+    <a id="myCafeLink1" onclick="locateCafe(1), getDistance(1)" href="#about">Props</a>
+    <a id="myCafeLink2" onclick="locateCafe(2), getDistance(2)" href="#contact">LaBanchina</a>
+    <a id="myCafeLink3" onclick="locateCafe(3), getDistance(3)" href="#contact">NextDoor</a>
+    <a id="myCafeLink4" onclick="locateCafe(4), getDistance(4)" href="#contact">CCN</a>
+    <a id="myCafeLink5" onclick="locateCafe(5), getDistance(5)" href="#contact">Kalaset</a>
+    <a id="myCafeLink6" onclick="locateCafe(6), getDistance(6)" href="#contact">Bevars</a>
+    <a id="myCafeLink7" onclick="locateCafe(7), getDistance(7)" href="#contact">Dyrehaven</a>
+    <a id="myCafeLink8" onclick="locateCafe(8), getDistance(8)" href="#contact">BangJensen</a>
+    <a id="myCafeLink9" onclick="locateCafe(9), getDistance(9)" href="#contact">LOS</a>
+    <a id="myCafeLink10" onclick="locateCafe(10), getDistance(10)" href="#contact">Souls</a>
+    <a id="myCafeLink11" onclick="locateCafe(11), getDistance(11)" href="#contact">Papiroen</a>
+    <a id="myCafeLink12" onclick="locateCafe(12), getDistance(12)" href="#contact">Torvehallerne</a>
+    <a id="myCafeLink13" onclick="locateCafe(13), getDistance(13)" href="#contact">Home</a>
+  </span> 
+</span>
+        </div>
+    
+ <!-- <span> 
+      <div id="storename">Store Name</div>
+    <div id="storesun">Sun Time</div> 
+      </span> 
+    
+    <span> 
+        <div id="storerating">Store Rating</div>
+    <div id="storedistance">Store Distance</div> 
+      </span>  -->
+    
+   <div>
+    <span id="storeinfoleft">      
+        <p id="storename1">Store Name</p>
+        <p id="storerating1">Store Rating</p>  
+    </span>
+    
+    
+    <span id="storeinforight">
+        <p id="storesun1">Store Sun</p>
+        <p id="storedistance1">Store Distance</p>
+    </span>
+        </div>
+   
+<!--<button class="button button5" id="xBtnMen">M</button>-->
+    
+    
+   
+       
+    
+    <script>
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+function x1myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+</script>
+    
+      <!--  <br><br>
+    
+    <div draggable="true"><img src="images/slider_handle_custom_UI-02-02.svg" class="sliderhangeimg"></div>
+    
+    <div id="draggable2" class="draggable ui-widget-content">
+  <p>I can be dragged only horizontally</p>
+</div>
+    <!--
+    <div class="draggable">draggable only downwards</div><input type="text" name="date" id="date"> 
+    
+     <br><br> <br><br> 
+   
+ 
+
+  
+     
+ 
+  
+ 
+<input id="date" type="range" min="1" max="365" step="1" width="100%"><label for="date"></label>
+<input id="time" type="range" min="0" max="23" step="1" width="100%"><label for="time"></label>
+   <br><br> <br><br> <br><br> <br>-->
+    <br><br><br><br><br><br><br><br><br>
+    <div id="xlabel">Round Tower</div> <!-- should make visibility none, then toggle when clicked -->
+    
+    <a href="draggable3.html">             DragMe</a> 
+    <a href="touch_1.html">             Touch </a>
+     <a href="OSMBuildings-3.1.0/index-clean.html">             clean osm </a>
+    
+    
+
+   
+    
+<script>
+  var osmb = new OSMBuildings({
+    baseURL: './OSMBuildings',
+    minZoom: 13,
+    maxZoom: 20,
+    position: { latitude:55.681194, longitude:12.575768 },
+    zoom: 17,
+     // fadeIn: false, doesnt seem to work
+    state: true, // stores map position/rotation in url
+    effects: ['shadows'],
+     attribution: '<a href="https://osmbuildings.org/copyright/">.</a>' //OSM Buildings '© 3D <a href="https://osmbuildings.org/copyright/">.</a>' //OSM Buildings
+  }).appendTo('map');
+
+  osmb.addMapTiles(
+    'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
+    {
+      attribution: '© Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="https://mapbox.com/">Mapbox</a>'
+    }
+  );
+
+  osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+ //osmb.setDate("June 13, 2016 3:40:00 UTC+1000");
+    //   osmb.setDate(1491834630000);   
+  //osmb.setDate(xCurrentTimeString);
+    
+   
+    // osmb.on("mouseup", )
+    
+
+  //***************************************************************************
+
+  osmb.on('pointermove', function(e) {
+    var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
+      if (id) {
+        document.body.style.cursor = 'pointer';
+        osmb.highlight(id, '#f08000');
+      } else {
+        document.body.style.cursor = 'default';
+        osmb.highlight(null);
+      }
+    });
+  });
+
+  //***************************************************************************
+
+  var controlButtons = document.querySelectorAll('.control button');
+
+  for (var i = 0, il = controlButtons.length; i < il; i++) {
+    controlButtons[i].addEventListener('click', function(e) {
+      var button = this;
+      var parentClassList = button.parentNode.classList;
+      var direction = button.classList.contains('inc') ? 1 : -1;
+      var increment;
+      var property;
+
+      if (parentClassList.contains('tilt')) {
+        property = 'Tilt';
+        increment = direction*10;
+      }
+      if (parentClassList.contains('rotation')) {
+        property = 'Rotation';
+        increment = direction*10;
+      }
+      if (parentClassList.contains('zoom')) {
+        property = 'Zoom';
+        increment = direction*1;
+          
+      }
+      if (property) {
+        osmb['set'+ property](osmb['get'+ property]()+increment);
+      }
+    });
+  }
+   
+    //--------------------------------------------------------- LABELS -----------------------------
+    
+    
+         
+    
+   /*  var xlabel = document.getElementById('xlabel');
+osmb.on('change', function() {
+  var pos = osmb.project(55.681194, 12.575768, 1);
+  xlabel.style.left = Math.round(pos.x) + 'px';
+  xlabel.style.top = Math.round(pos.y) + 'px';
+}); */
+    
+    
+    
+    
+    
+    /*
+    
+     document.getElementById("xBtnMen").addEventListener("click", xBtnFnMen);
+function xBtnFnMen() {
+    
+    
+    
+    $("#xlabel").text(xCafes[xi1].cafeName);
+    
+    osmb.setPosition({latitude:xCafes[xi1].cafeLatLong[0], longitude:xCafes[xi1].cafeLatLong[1]});
+    
+    var xlabel = document.getElementById('xlabel');
+    
+    var pos = osmb.project(xCafes[xi1].cafeLatLong[0], xCafes[xi1].cafeLatLong[1], 1);
+    xlabel.style.left = Math.round(pos.x) + 'px';
+    xlabel.style.top = Math.round(pos.y) + 'px';
+    
+    osmb.on('change', function() {
+  var pos = osmb.project(xCafes[xi1].cafeLatLong[0], xCafes[xi1].cafeLatLong[1], 1);
+  xlabel.style.left = Math.round(pos.x) + 'px';
+  xlabel.style.top = Math.round(pos.y) + 'px';
+        
+});
+    
+}; */
+
+   
+   
+     //--------------------------------------------------------- END LABELS -----------------------------
+    
+    
+    </script>
+
+    <script>
+       
+        now = new Date;
+        
+            var split = new Date().toString().split(" ");
+var timeZoneFormatted = split[split.length - 2] + " " + split[split.length - 1]; //get timezone
+        
+        var xd = new Date(); //date number to name
+var xmonth1 = new Array();
+xmonth1[0] = "January";
+xmonth1[1] = "February";
+xmonth1[2] = "March";
+xmonth1[3] = "April";
+xmonth1[4] = "May";
+xmonth1[5] = "June";
+xmonth1[6] = "July";
+xmonth1[7] = "August";
+xmonth1[8] = "September";
+xmonth1[9] = "October";
+xmonth1[10] = "November";
+xmonth1[11] = "December";
+var xn = xmonth1[xd.getMonth()]; 
+        
+        var xYear = now.getFullYear();
+        var xMonth = xn;
+        var xDay = now.getDate();
+        var xHour = now.getHours();
+        var xMinute = now.getMinutes();
+        var xSecond = now.getSeconds();
+        
+        var xCurrentTimeString = [xMonth + " " + xDay + ", " + xYear + " " + xHour + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted];
+        
+        
+        var xHour1 = xHour + 1;
+        var currentHour = now.getHours();
+        
+    
+        
+       
+  
+  
+        
+        
+     //   timeRangeLabel.innerText = xTimeString;
+     /*       
+timeRange = document.getElementById('time');
+dateRange = document.getElementById('date');
+timeRangeLabel = document.querySelector('*[for=time]');
+dateRangeLabel = document.querySelector('*[for=date]');
+        
+        
+        
+        
+        
+        
+            
+            
+    
+     //osmb.date(new Date(Mon Apr 10 2017 16:16:19 GMT+0200 (CEST));
+        
+        
+       // osmb.setDate(10 2 2016 16:16:19 GMT+0200);
+     //   osmb.date(new Date(Thu Dec 22 2016 16:16:19 GMT+0200 (CEST));
+    
+    function changeDate() {
+    osmb.date(new Date(Thu Dec 22 2016 16:16:19 GMT+0200));
+    }
+    
+        Date = (Thu Dec 22 2016 16:16:19 GMT+0200);
+        
+        var xDate = new Date(99, 5, 24, 11, 33, 30, 0);
+                             osmb.date(xDate);
+        */
+        
+   
+        
+       /* var xTimeDisplay;
+        var xTimeString = [xMonth + " " + xDay + ", " + xYear + " " + xTimeDisplay + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted];
+        
+      document.getElementById("time").addEventListener("mouseup", xMyFunction);
+
+function xMyFunction() {
+    var xSliderValue = document.getElementById("time").value;
+$("#xSliderValueDisplay").text(xSliderValue);
+    xSliderValue;
+    console.log(xSliderValue);
+    
+    var xTimeDisplay = document.getElementById("xSliderValueDisplay").innerHTML;
+    
+    xTimeDisplay;
+    
+    var xTimeString = [xMonth + " " + xDay + ", " + xYear + " " + xTimeDisplay + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted];
+    
+    
+    
+    return xSliderValue;
+} 
+         
+        document.getElementById("myBtn1").addEventListener("click", myFunction1);
+function myFunction1() {
+    var promptedTime = prompt("Time?");
+    osmb.setDate(xMonth + " " + xDay + ", " + xYear + " " + promptedTime + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted);
+    $("#xSliderValueDisplay").text(promptedTime);
+} */   
+        
+         
+   document.getElementById("xBtnNow").addEventListener("click", xBtnFnNow);
+function xBtnFnNow() {
+    
+    osmb.setDate(xMonth + " " + xDay + ", " + xYear + " " + currentHour + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted);
+    $("#xBtnNow").text(currentHour + " " + xMinute);
+    
+}    
+         
+  
+         
+   document.getElementById("xBtnMin").addEventListener("click", xBtnFnMin);
+function xBtnFnMin() {
+    
+    xHour --;
+    osmb.setDate(xMonth + " " + xDay + ", " + xYear + " " + xHour + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted);
+    $("#xBtnNow").text(xHour + " " + xMinute);
+}  
+         
+   document.getElementById("xBtnPls").addEventListener("click", xBtnFnPls);
+function xBtnFnPls() {
+    
+    xHour ++;
+    osmb.setDate(xMonth + " " + xDay + ", " + xYear + " " + xHour + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted);
+    $("#xBtnNow").text(xHour + " " + xMinute);
+}  
+        
+         
+         document.getElementById("xBtnPos").addEventListener("click", xBtnFnPos);
+function xBtnFnPos() {
+    
+    if ("geolocation" in navigator) {
+  navigator.geolocation.getCurrentPosition(function(position) {
+  console.log(position.coords.latitude, position.coords.longitude);
+      var xUserLat = position.coords.latitude;
+      var xUserLong = position.coords.longitude;
+      console.log(xUserLat);
+      console.log(xUserLong);
+      
+      osmb.setPosition({latitude:xUserLat, longitude:xUserLong });
+});
+        
+        
+} else {
+  alert("not available");
+    return;
+}
+    
+    
+    
+}
+        
+         //osmb.setPosition({latitude:55.681194, longitude:12.575768 });
+         
+         /*
+         document.getElementById("myBtn6").addEventListener("click", myFunction6);
+function myFunction6() {
+   function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+        osmb.setPosition(latitude: position.coords.latitude, longitude: position.coords.longitude);
+    }
+   }
+         function showPosition(position) {
+    x.innerHTML = "Latitude: " + position.coords.latitude + 
+    "<br>Longitude: " + position.coords.longitude;
+} */
+         
+//var xSliderValue = document.getElementById("time").value;
+//$("#xSliderValueDisplay").text(xSliderValue);
+</script>
+    
+    
+    
+    <script>
+    /*
+  var now,
+  date, time,
+  timeRange, dateRange,
+  timeRangeLabel, dateRangeLabel;
+
+function changeDate() {
+  var Y = now.getFullYear(),
+    M = now.getMonth(),
+    D = now.getDate(),
+    h = now.getHours(),
+    m = 0;
+
+  timeRangeLabel.innerText = pad(h) + ':' + pad(m);
+  dateRangeLabel.innerText = Y + '-' + pad(M+1) + '-' + pad(D);
+
+  osmb.date(new Date(Y, M, D, h, m));
+}
+
+function onTimeChange() {
+  now.setHours(this.value);
+  now.setMinutes(0);
+  changeDate();
+}
+
+function onDateChange() {
+  now.setMonth(0);
+  now.setDate(this.value);
+  changeDate();
+}
+
+function pad(v) {
+  return (v < 10 ? '0' : '') + v;
+}
+
+timeRange = document.getElementById('time');
+dateRange = document.getElementById('date');
+timeRangeLabel = document.querySelector('*[for=time]');
+dateRangeLabel = document.querySelector('*[for=date]');
+
+now = new Date;
+changeDate();
+
+// init with day of year
+var Jan1 = new Date(now.getFullYear(), 0, 1);
+dateRange.value = Math.ceil((now-Jan1)/86400000);
+
+timeRange.value = now.getHours();
+
+timeRange.addEventListener('change', onTimeChange);
+dateRange.addEventListener('change', onDateChange );
+timeRange.addEventListener('input', onTimeChange);
+dateRange.addEventListener('input', onDateChange);
+
+// how to control js with range input : http://www.developerdrive.com/2012/07/creating-a-slider-control-with-the-html5-range-input/
+// http://abpetkov.github.io/powerange/
+
+*/
+    
+</script>
+
+
+</body>
+</html>

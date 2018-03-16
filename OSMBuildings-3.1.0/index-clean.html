@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OSM Buildings</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map {
+      width: 100%;
+      height: 80%;
+    }
+
+    .control {
+      position: absolute;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .control.tilt {
+      top: 0;
+    }
+
+    .control.rotation {
+      top: 45px;
+    }
+
+    .control.zoom {
+      top: 90px;
+    }
+
+    .control.zoom button{
+      font-weight: normal;
+    }
+
+    .control button {
+      width: 30px;
+      height: 30px;
+      margin: 15px 0 0 15px;
+      border: 1px solid #999999;
+      background: #ffffff;
+      opacity: 0.6;
+      border-radius: 5px;
+      box-shadow: 0 0 5px #666666;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .control button:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+      #mapTemp {
+        
+        width: 100%;
+        height: 70%;
+        background-color: antiquewhite;
+        text-align: center;
+    }
+    
+    #overflowBox{
+        
+        width: 100%;
+        height: 20%;
+        overflow: hidden;
+        
+        background-color: #999999;
+        
+        margin: 0 auto;
+        
+        display: flex;
+     align-items: center;
+     justify-content: center;
+        
+        flex-shrink: 0 
+    
+    
+        
+    }
+    
+    #dragRestrictor {
+        
+  width: 4500px;
+  height: 100%;
+  background-color: #aaaaaa;
+        
+       display: flex;
+        align-items: center;
+     justify-content: center;
+        
+        flex-shrink: 0 
+        
+        
+        
+        
+    }
+        
+        #drag-1 {
+  width: 73.4%;
+  height: 100%;
+ /* min-height: 6.5em;
+  margin: 10%;*/
+
+  /*background-color: #29e;*/
+            background: url(images/slider_-04.svg) no-repeat;
+            background-position: center;
+    background-size: contain; 
+  color: white;
+            
+            display: flex;
+        align-items: center;
+     justify-content: center;
+            
+           flex-shrink: 0 ;
+            
+               overflow:hidden /*test*/
+ /*   margin: 0 auto; */
+
+ /* border-radius: 0.75em; */
+ /* padding: 4%; */
+
+  -webkit-transform: translate(0px); /* -webkit-transform: translate(0px, 0px); */
+         /* transform: translate(0px, 0px); */
+}
+
+#drag-me::before {
+  content: "#" attr(id);
+  font-weight: bold;
+}
+  </style>
+  <link rel="stylesheet" href="OSMBuildings/OSMBuildings.css">
+  <script src="OSMBuildings/OSMBuildings.js"></script>
+    <script src="//cdn.jsdelivr.net/interact.js/1.2.6/interact.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+</head>
+
+<body>
+<div id="map"></div>
+
+<div class="control tilt">
+  <button class="dec">&#8601;</button>
+  <button class="inc">&#8599;</button>
+</div>
+
+<div class="control rotation">
+  <button class="inc">&#8630;</button>
+  <button class="dec">&#8631;</button>
+</div>
+
+<div class="control zoom">
+  <button class="dec">-</button>
+  <button class="inc">+</button>
+</div>
+    
+    <div id="overflowBox">
+    <div id="dragRestrictor">
+<div id="drag-1" class="draggable">
+  <p style="opacity: 0"> Drag Me </p>
+</div>
+</div>
+</div>
+    <div id="selectorSquare">^</div>
+
+<br><br>
+<div id="timediv"><p>Time</p></div>
+    
+    <br><br>
+
+<script>
+  var osmb = new OSMBuildings({
+    baseURL: './OSMBuildings',
+    minZoom: 13,
+    maxZoom: 20,
+    position: { latitude:55.681194, longitude:12.575768 },
+    zoom: 17,
+    state: true, // stores map position/rotation in url
+    effects: ['shadows'],
+    attribution: '© 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
+  }).appendTo('map');
+
+  osmb.addMapTiles(
+    'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
+    {
+      attribution: '© Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="https://mapbox.com/">Mapbox</a>'
+    }
+  );
+
+  osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+
+  //***************************************************************************
+
+  osmb.on('pointermove', function(e) {
+    var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
+      if (id) {
+        document.body.style.cursor = 'pointer';
+        osmb.highlight(id, '#f08000');
+      } else {
+        document.body.style.cursor = 'default';
+        osmb.highlight(null);
+      }
+    });
+  });
+
+  //***************************************************************************
+
+  var controlButtons = document.querySelectorAll('.control button');
+
+  for (var i = 0, il = controlButtons.length; i < il; i++) {
+    controlButtons[i].addEventListener('click', function(e) {
+      var button = this;
+      var parentClassList = button.parentNode.classList;
+      var direction = button.classList.contains('inc') ? 1 : -1;
+      var increment;
+      var property;
+
+      if (parentClassList.contains('tilt')) {
+        property = 'Tilt';
+        increment = direction*10;
+      }
+      if (parentClassList.contains('rotation')) {
+        property = 'Rotation';
+        increment = direction*10;
+      }
+      if (parentClassList.contains('zoom')) {
+        property = 'Zoom';
+        increment = direction*1;
+      }
+      if (property) {
+        osmb['set'+ property](osmb['get'+ property]()+increment);
+      }
+    });
+  }
+</script>
+    <script>
+    
+    // target elements with the "draggable" class
+interact('.draggable')
+  .draggable({
+    // enable inertial throwing
+    inertia: true,
+    // keep the element within the area of it's parent
+    restrict: {
+      restriction: "parent",
+      endOnly: true,
+      elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+    },
+    // enable autoScroll
+    autoScroll: true,
+
+    // call this function on every dragmove event
+    onmove: dragMoveListener ,
+    // call this function on every dragend event
+    onend: function (event) {
+        
+      /* var textEl = event.target.querySelector('p');
+
+      textEl && (textEl.textContent =
+        'moved '
+        + (Math.sqrt(event.dx * event.dx +
+                     event.dy * event.dy)|0) + 'px'); */
+        
+        
+        
+                     
+    } 
+  });
+
+  function dragMoveListener (event) {
+    var target = event.target,
+        // keep the dragged position in the data-x/data-y attributes
+        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+    // translate the element
+    target.style.webkitTransform =
+    target.style.transform =
+      'translate(' + x + 'px)'; // 'translate(' + x + 'px, ' + y + 'px)';
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x);
+   // target.setAttribute('data-y', y);
+      
+      var xRemapped = ((x - 598) / (-598 - 598)) * (1440 - 60) + 60;
+      //((Input - InputLow) / (InputHigh - InputLow)) * (OutputHigh - OutputLow) + OutputLow;
+      
+      var xRemappedRounded = Math.round(xRemapped);
+      
+      
+      /*var hours = Math.trunc(xRemappedRounded/60);
+      var minutes = xRemappedRounded % 60;
+
+      $("#timediv").text(hours +" : "+ minutes);*/
+      
+      
+      var h = Math.floor(xRemappedRounded / 60);
+  var m = xRemappedRounded % 60;
+  h = h < 10 ? '0' + h : h;
+  m = m < 10 ? '0' + m : m;
+      
+      //script from main
+      
+      now = new Date;
+        
+            var split = new Date().toString().split(" ");
+var timeZoneFormatted = split[split.length - 2] + " " + split[split.length - 1]; //get timezone
+        
+        var xd = new Date(); //date number to name
+var xmonth1 = new Array();
+xmonth1[0] = "January";
+xmonth1[1] = "February";
+xmonth1[2] = "March";
+xmonth1[3] = "April";
+xmonth1[4] = "May";
+xmonth1[5] = "June";
+xmonth1[6] = "July";
+xmonth1[7] = "August";
+xmonth1[8] = "September";
+xmonth1[9] = "October";
+xmonth1[10] = "November";
+xmonth1[11] = "December";
+var xn = xmonth1[xd.getMonth()]; 
+        
+        var xYear = now.getFullYear();
+        var xMonth = xn;
+        var xDay = now.getDate();
+        var xHour = now.getHours();
+        var xMinute = now.getMinutes();
+        var xSecond = now.getSeconds();
+        
+        var xCurrentTimeString = [xMonth + " " + xDay + ", " + xYear + " " + xHour + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted];
+        
+        
+        var xHour1 = xHour + 1;
+        var currentHour = now.getHours();
+      
+      //end script from main
+      
+       //$("#timediv").text(h +" : "+ m);
+      
+      $("#timediv").text(xMonth + " " + xDay + ", " + xYear + " " + h + ":" + m + ":" + xSecond + " " + timeZoneFormatted);
+    $("#xBtnNow").text(xHour + " " + xMinute);
+      
+      
+      
+      
+  }
+
+  // this is used later in the resizing and gesture demos
+  // window.dragMoveListener = dragMoveListener;
+</script>
+</body>
+</html>
