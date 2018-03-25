@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sunmap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+
+  <!-- Link Swiper's CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.2.0/css/swiper.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.2.0/css/swiper.min.css">
+    
+  <!-- Swiper JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.2.0/js/swiper.js"></script> 
+
+  <!-- Google webfonts -->  
+  <link href="https://fonts.googleapis.com/css?family=Assistant:700,800" rel="stylesheet">
+    
+  <!-- OSMB --> 
+  <link href="https://cdn.osmbuildings.org/3.2.10/OSMBuildings.css" rel="stylesheet">
+  <script src="https://cdn.osmbuildings.org/3.2.10/OSMBuildings.js"></script>
+    
+  <!-- jquery -->  
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    
+  <!-- suncalc --> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.js"></script>
+    
+  <style>
+      
+    html, body {
+      position: relative;
+      height: 100%;
+    }
+    body {
+      background: #3f3f3f;
+      margin: 0;
+      padding: 0;
+    }
+      /*.searchbar{
+      width: 100%;
+      height: 10%;
+      background-color: burlywood;
+      display: block;
+      position: relative;
+    }*/
+      #map {
+      width: 100%;
+      height: 90%;
+      background-color: darkgray;
+      display: block;
+      position: relative;
+          
+    }
+      #locate{
+      position: absolute;
+      right: 5%;
+      bottom: 7%;
+      width: 40px;
+      height: 40px;
+
+      z-index: 50;
+     }
+      #searchIcon{
+      position: absolute;
+      right: 5%;
+      top: 5%;
+      width: 40px;
+      height: 40px;
+
+      z-index: 50;
+     }
+      #menuIcon{
+      position: absolute;
+      left: 5%;
+      top: 5%;
+      width: 40px;
+      height: 40px;
+
+      z-index: 50;
+     }
+      .shadow {
+            filter: drop-shadow( 5px 5px 5px rgba(0, 0, 0, 0.6) );
+     }
+      .selectorSquare{
+          
+          pointer-events: none; /* click through div */
+          
+          position: absolute;
+          margin: 0 auto;
+          left: 0;
+          right: 0;
+          bottom: 0px;
+          width: 20%;
+          height: 100%;
+          
+          box-sizing: border-box;
+          border: 6px solid white;
+          
+          z-index: 100;
+      }
+      
+    .swiper-container {
+      width: 100%;
+      height: 10%;    
+      display: block;
+    }
+    .swiper-slide {
+      font-family: 'Assistant',Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 1px 1px 0px rgba(0,0,0, 0.2);
+      font-size: 18px;
+      font-variant: small-caps;
+      letter-spacing: 2px;
+        
+      /* Center slide text vertically */
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
+      .swiper-slide.a {background-color: #faf0a7}
+      .swiper-slide.b {background-color: #f7e492}
+      .swiper-slide.c {background-color: #f0c689}
+      .swiper-slide.d {background-color: #e5a38c}
+      .swiper-slide.e {background-color: #e3968b}
+      .swiper-slide.f {background-color: #e1898b}
+      .swiper-slide.g {background-color: #d59096}
+      .swiper-slide.h {background-color: #ca97a1}
+      .swiper-slide.i {background-color: #a6879a}
+      .swiper-slide.j {background-color: #7f7893}
+      .swiper-slide.k {background-color: #596085}
+      .swiper-slide.l {background-color: #464b68}
+      
+      .hidden {
+          display: none;
+      }
+      .swiperSunSvg {
+          width: 55%;
+      }
+     
+  </style>
+    
+</head>
+    
+<body>
+    
+<!-- <div class="searchbar">searchbar div</div> -->
+<div id="map">
+    <div id="locate" onclick="getLocation()">
+        <svg class="shadow" id="locate_svg" data-name="locate_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><style>.cls-1{fill:#fff;}</style></defs><title>sunset copy</title><polygon class="cls-1" points="41.92 57.08 50.4 86.78 78.69 20.31 12.22 48.6 41.92 57.08"/>
+        </svg>
+    </div>
+    <div id="searchIcon">
+        <svg class="shadow" id="search_svg" data-name="search_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><style>.cls-1{fill:none;stroke:#fff;stroke-linecap:round;stroke-miterlimit:10;stroke-width:5.67px;}</style></defs><title>search</title><circle class="cls-1" cx="45" cy="51" r="25"/><line class="cls-1" x1="66" y1="67.5" x2="80.5" y2="82"/></svg>
+    </div>
+    <div id="menuIcon">
+        <svg class="shadow" id="menu_svg" data-name="menu_svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><style>.cls-1{fill:none;stroke:#fff;stroke-linecap:round;stroke-miterlimit:10;stroke-width:5.67px;}</style></defs><title>Artboard 7</title><line class="cls-1" x1="25.5" y1="27" x2="74.5" y2="27"/><line class="cls-1" x1="26" y1="73" x2="75" y2="73"/><line class="cls-1" x1="26" y1="50" x2="75" y2="50"/></svg>
+    </div>
+</div>
+
+  <!-- Swiper -->
+  <div class="swiper-container">
+    <div class="selectorSquare"></div>
+    <div class="swiper-wrapper">
+      <div class="swiper-slide l">1</div> 
+      <div class="swiper-slide k">2</div> 
+      <div class="swiper-slide j">3</div> 
+      <div class="swiper-slide i">4</div> 
+      <div class="swiper-slide h">5</div> 
+      <div class="swiper-slide g">6</div> 
+      <div class="swiper-slide f">7</div>
+      <div class="swiper-slide e">8</div>
+      <div class="swiper-slide d">9</div>
+      <div class="swiper-slide c">10</div>
+      <div class="swiper-slide b">11</div>
+      <div class="swiper-slide a">12</div>
+      <div class="swiper-slide b">13</div>
+      <div class="swiper-slide c">14</div>
+      <div class="swiper-slide d">15</div>
+      <div class="swiper-slide e">16</div>
+      <div class="swiper-slide f">17</div>
+      <div class="swiper-slide g">18</div>
+      <div class="swiper-slide h">19</div>
+      <div class="swiper-slide i">20</div>
+      <div class="swiper-slide j">21</div>
+      <div class="swiper-slide k">22</div>
+      <div class="swiper-slide l">23</div>
+      <div class="swiper-slide m">24</div>
+    </div>
+  </div>
+
+<script> 
+    
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      console.log("Latitude: " + pos.coords.latitude +
+        "Longitude: " + pos.coords.longitude);
+        map.setPosition({latitude:pos.coords.latitude, longitude:pos.coords.longitude});
+    });
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}   
+    //get window height
+    var boxwidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    var boxheight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+    //set variables
+    var slidesPerViewNumber = boxwidth / (boxheight/10);
+    var slidesPerViewNumberRounded = Math.round(slidesPerViewNumber);
+
+    //change css
+    var selectorSquare = document.querySelector(".selectorSquare");
+    selectorSquare.style.width = ((boxheight / 10) + 4) + 'px'; //could do this on window resize https://codepen.io/jondlm/pen/doijJ // or just use mySwiper.height;
+
+    //--------------------------------- test hide divs and set now text
+
+    //suncalc
+    var times = SunCalc.getTimes(new Date(), 55.681194, 12.575768); //should use auto locate, needs to ask location on init
+    var sunriseHour = times.sunrise.getHours();
+    var sunsetHour = times.sunset.getHours();
+
+    var sunriseDisplay = sunriseHour - 2;
+    var sunsetDisplay = sunsetHour;
+    var currentHour = 12 - 1; //should be automatic eg now.getHours();
+    var dayHours = sunsetDisplay - sunriseDisplay;
+
+    $("div.swiper-slide:lt(" + sunriseDisplay + ")" ).addClass( "hidden" );
+    $("div.swiper-slide:gt(" + sunsetDisplay + ")" ).addClass( "hidden" );
+    $("div.swiper-slide:eq(" + currentHour + ")" ).text( "now" ); //or change to bold
+    //$("div.swiper-slide:eq(" + ( sunriseHour - 1 ) + ")" ).text( "sunrise" );
+    //$("div.swiper-slide:eq(" + ( sunsetHour - 1 )+ ")" ).text( "sunset" );
+    // mySwiper.removeSlide([0, 1]); //could work to remove first and second slides
+    
+    //add id
+    $("div.swiper-slide:eq(" + ( sunriseHour - 1 ) + ")" ).attr('id', 'sunriseID');
+    $("div.swiper-slide:eq(" + ( sunsetHour - 1 )+ ")" ).attr('id', 'sunsetID');
+    
+    //insert image
+    var sunriseDiv = document.getElementById('sunriseID');
+    sunriseDiv.innerHTML = "<svg class='swiperSunSvg' id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><style>.cls-1,.cls-2{fill:none;stroke:#fff;stroke-linecap:round;stroke-width:4.61px;}.cls-1{stroke-miterlimit:10;}.cls-2{stroke-linejoin:round;}</style></defs><title>sunrise</title><path class='cls-1' d='M26.62,65.5a23.38,23.38,0,1,1,46.76,0'/><line class='cls-1' x1='16.26' y1='74.96' x2='83.74' y2='74.96'/><line class='cls-1' x1='50' y1='66.05' x2='50' y2='22.96'/><line class='cls-1' x1='29.68' y1='39.22' x2='24.18' y2='31.76'/><line class='cls-1' x1='18.29' y1='53.86' x2='10.15' y2='51.27'/><line class='cls-1' x1='70.31' y1='39.22' x2='75.81' y2='31.76'/><line class='cls-1' x1='81.7' y1='53.86' x2='89.84' y2='51.27'/><polyline class='cls-2' points='56.88 27.4 50 20.52 43.12 27.4'/></svg>";
+    var sunsetDiv = document.getElementById('sunsetID');
+    sunsetDiv.innerHTML = "<svg class='swiperSunSvg' id='Layer_1' data-name='Layer 1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><style>.cls-1,.cls-2{fill:none;stroke:#fff;stroke-linecap:round;stroke-width:4.61px;}.cls-1{stroke-miterlimit:10;}.cls-2{stroke-linejoin:round;}</style></defs><title>sunset</title><path class='cls-1' d='M26.62,65.5a23.38,23.38,0,1,1,46.76,0'/><line class='cls-1' x1='16.26' y1='74.96' x2='83.74' y2='74.96'/><line class='cls-1' x1='50' y1='20.52' x2='50' y2='63.61'/><line class='cls-1' x1='29.68' y1='39.22' x2='24.18' y2='31.76'/><line class='cls-1' x1='18.29' y1='53.86' x2='10.15' y2='51.27'/><line class='cls-1' x1='70.31' y1='39.22' x2='75.81' y2='31.76'/><line class='cls-1' x1='81.7' y1='53.86' x2='89.84' y2='51.27'/><polyline class='cls-2' points='43.12 59.17 50 66.05 56.88 59.17'/></svg>";    
+    
+    
+    
+    
+//------------------------- <!-- Initialize Swiper -->
+
+var mySwiper = new Swiper('.swiper-container', {
+
+        slidesPerView: slidesPerViewNumberRounded,
+        initialSlide: 6, //should auto detect current time
+        centeredSlides: true,
+        grabCursor: true,
+        simulateTouch: true,
+        slideToClickedSlide: false, //disabled because doesnt seem to work
+
+        //keyboard control    
+        keyboard: {
+        enabled: true,
+        onlyInViewport: false,
+        },
+
+        //momentum
+        freeMode: true,
+        freeModeMomentum: true,
+        freeModeMomentumRatio: 0.5,
+        freeModeMomentumVelocityRatio: 2,
+        freeModeMomentumBounce: true,
+        freeModeMomentumBounceRatio: 2,
+        freeModeMinimumVelocity: 0.1,
+        freeModeSticky: true,
+
+});
+      
+//remap normal index to 24 hour time
+function remap (swiperActiveIndex, in_min, in_max, out_min, out_max) {
+    return (swiperActiveIndex - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+};
+      
+//main time change function
+mySwiper.on('slideChange', function () {
+    var swiperActiveIndex = mySwiper.activeIndex;
+    
+    //suncalc
+    var times = SunCalc.getTimes(new Date(), 55.681194, 12.575768); //should use auto locate, this will be a problem
+    var sunriseHour = times.sunrise.getHours();
+    var sunsetHour = times.sunset.getHours();
+
+    var sunriseDisplay = sunriseHour - 2;
+    var sunsetDisplay = sunsetHour;
+    var dayHours = sunsetDisplay - sunriseDisplay;
+
+    var sliderHour = remap(swiperActiveIndex, 0, dayHours, sunriseDisplay, sunsetDisplay) + 1;
+    
+    console.log( sliderHour );
+   // $("div.searchbar").text( sliderHour )
+    
+    //test with map.setDate("March 24, 2018 15:4:18 GMT+0100 (CET)"); 
+    
+    //change to dark map tiles depending on time???
+    
+});
+    
+/* mySwiper.on('click', function () {
+    mySwiper.slideTo(mySwiper.clickedIndex, 300, false);
+    console.log(mySwiper.clickedIndex);
+}); doesnt seem to work */
+    
+/* //possible add minutes function 
+mySwiper.on('sliderMove', function () {
+    var sliderMinute = mySwiper.getTranslate();
+    console.log( sliderMinute );
+}); divide pixels by number of hours visible or use this only for hours and minutes*/
+    
+</script>
+    
+<script>
+
+  var map = new OSMBuildings({
+
+    position: { latitude: 55.681194, longitude: 12.575768 },
+    zoom: 17,
+    minZoom: 13,
+    maxZoom: 20,
+    effects: ['shadows'],
+    attribution: '© Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> © Map <a href="https://mapbox.com/">Mapbox</a> © 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
+      
+  }).appendTo(document.getElementById('map'));
+
+  map.addMapTiles('https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png');
+  map.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/hxmrcuw3/tile/{z}/{x}/{y}.json');
+
+</script>
+    
+</body>
+</html>
