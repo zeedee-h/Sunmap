@@ -492,8 +492,7 @@ xDistanceRounded = Math.round(xDistance * 100)/100;
   alert("not available");
     return;
 }
-        
-        }
+}
     
     
    /* window.onload = function() {
@@ -658,9 +657,11 @@ window.onclick = function(event) {
     <br><br><br><br><br><br><br><br><br>
     <div id="xlabel">Round Tower</div> <!-- should make visibility none, then toggle when clicked -->
     
+   
     <a href="draggable3.html">             DragMe</a> 
     <a href="touch_1.html">             Touch </a>
      <a href="OSMBuildings-3.1.0/index-clean.html">             clean osm </a>
+     <a href="swiper-sunmap-index.html">             new swiper</a> 
     
     
 
@@ -687,7 +688,7 @@ window.onclick = function(event) {
   );
 
   osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
- //osmb.setDate("June 13, 2016 3:40:00 UTC+1000");
+ //osmb.setDate("June 13, 2016 3:40:00 UTC+1000"); //osmb.setDate("June 13, 2016 3:40:00 UTC+1000");
     //   osmb.setDate(1491834630000);   
   //osmb.setDate(xCurrentTimeString);
     
@@ -894,9 +895,12 @@ function myFunction1() {
     $("#xSliderValueDisplay").text(promptedTime);
 } */   
         
-         
+         var now2 = xMonth + " " + xDay + ", " + xYear + " " + currentHour + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted;
+        
    document.getElementById("xBtnNow").addEventListener("click", xBtnFnNow);
 function xBtnFnNow() {
+    
+    
     
     osmb.setDate(xMonth + " " + xDay + ", " + xYear + " " + currentHour + ":" + xMinute + ":" + xSecond + " " + timeZoneFormatted);
     $("#xBtnNow").text(currentHour + " " + xMinute);
